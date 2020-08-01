@@ -14,7 +14,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  final _biggerFont = TextStyle(fontSize: 18.0);
+  final _biggerFont = TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold);
   final _saved = Set<WordPair>();
 
   // Future to fetch
