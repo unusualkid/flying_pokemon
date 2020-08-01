@@ -53,7 +53,7 @@ class _HomePageState extends State<HomePage> {
         if (snapshot.hasData) {
           List pokemons = snapshot.data.pokemons;
           for (var i = 0; i < pokemons.length; i++) {
-            var pokemon = Pokemon(name: pokemons[i]['pokemon']['name']);
+            var pokemon = Pokemon(pokemons[i]['pokemon']['name']);
             _pokemons.add(pokemon);
           }
           return ListView.builder(
@@ -62,7 +62,7 @@ class _HomePageState extends State<HomePage> {
               // If i is odd, add a divider
               if (i.isOdd)
                 return Divider(
-                  thickness: 2,
+                  thickness: 1.0,
                 );
 
               final index = i ~/ 2;
@@ -105,6 +105,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  // TODO: Separate this to a new Widget
   void _showFavorites() {
     Navigator.of(context).push(
       MaterialPageRoute<void>(
