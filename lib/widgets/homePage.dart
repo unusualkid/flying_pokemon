@@ -1,5 +1,9 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:english_words/english_words.dart';
+import 'package:flying_pokemon/models/pokemon.dart';
+import 'package:flying_pokemon/models/pokemonType.dart';
+import 'package:http/http.dart' as http;
 
 class HomePage extends StatefulWidget {
   HomePage({Key key, this.title}) : super(key: key);
@@ -10,9 +14,23 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  final _suggestions = <WordPair>[];
   final _biggerFont = TextStyle(fontSize: 18.0);
   final _saved = Set<WordPair>();
+
+  // Future to fetch
+  Future<PokemonType> futurePokemonType;
+
+  // List of all pokemons to show on homePage
+  final _pokemons = <Pokemon>[];
+
+  // Store user's favorite pokemons that he clicked on
+  final _favoritePokemons = Set<Pokemon>();
+
+  @override
+  void initState() {
+    super.initState();
+    futurePokemonType = fetchPokemonType();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -26,42 +44,63 @@ class _HomePageState extends State<HomePage> {
           ),
         ],
       ),
-      body: _buildSuggestions(),
+      body: _buildList(),
     );
   }
 
-  Widget _buildSuggestions() {
-    return ListView.builder(
-      padding: EdgeInsets.all(16),
-      itemBuilder: (context, i) {
-        if (i.isOdd) return Divider(); /*2*/
+  Widget _buildList() {
+    return FutureBuilder<PokemonType>(
+      future: futurePokemonType,
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          List pokemons = snapshot.data.pokemons;
+          for (var i = 0; i < pokemons.length; i++) {
+            var pokemon = Pokemon(name: pokemons[i]['pokemon']['name']);
+            _pokemons.add(pokemon);
+          }
+          return ListView.builder(
+            padding: EdgeInsets.all(16),
+            itemBuilder: (context, i) {
+              // If i is odd, add a divider
+              if (i.isOdd)
+                return Divider(
+                  thickness: 2,
+                );
 
-        final index = i ~/ 2; /*3*/
-        if (index >= _suggestions.length) {
-          _suggestions.addAll(generateWordPairs().take(5)); /*4*/
+              final index = i ~/ 2;
+              return _buildRow(_pokemons[index]);
+            },
+          );
+        } else if (snapshot.hasError) {
+          return Text("${snapshot.error}");
         }
-        return _buildRow(_suggestions[index]);
+
+        // By default, show a loading spinner.
+        return Center(
+          child: CircularProgressIndicator(),
+        );
       },
     );
   }
 
-  Widget _buildRow(WordPair pair) {
-    final alreadySaved = _saved.contains(pair);
+  Widget _buildRow(Pokemon pokemon) {
+    final alreadySaved = _favoritePokemons.contains(pokemon);
     return ListTile(
       title: Text(
-        pair.asPascalCase,
+        // Capitalize pokemon name
+        pokemon.name[0].toUpperCase() + pokemon.name.substring(1),
         style: _biggerFont,
       ),
       trailing: Icon(
         alreadySaved ? Icons.favorite : Icons.favorite_border,
-        color: alreadySaved ? Colors.red : null,
+        color: alreadySaved ? Colors.pink[200] : null,
       ),
       onTap: () {
         setState(() {
           if (alreadySaved) {
-            _saved.remove(pair);
+            _favoritePokemons.remove(pokemon);
           } else {
-            _saved.add(pair);
+            _favoritePokemons.add(pokemon);
           }
         });
       },
@@ -96,5 +135,17 @@ class _HomePageState extends State<HomePage> {
         },
       ),
     );
+  }
+
+  Future<PokemonType> fetchPokemonType() async {
+    final response = await http.get('https://pokeapi.co/api/v2/type/3');
+
+    if (response.statusCode == 200) {
+      // If the server did return a 200 OK response,
+      // then parse the JSON.
+      return PokemonType.fromJson(json.decode(response.body));
+    } else {
+      throw Exception('Failed to load album');
+    }
   }
 }
