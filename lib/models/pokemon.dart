@@ -1,4 +1,8 @@
 class Pokemon {
-  final String name;
-  Pokemon({this.name});
+  String name;
+
+  Pokemon(String name) {
+    // Capitalize pokemon name
+    this.name = name[0].toUpperCase() + name.substring(1);
+  }
 }
