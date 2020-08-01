@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flying_pokemon/models/pokemon.dart';
 import 'package:flying_pokemon/models/pokemonType.dart';
+import 'package:flying_pokemon/utility/router.dart';
 import 'package:http/http.dart' as http;
 
 class HomePage extends StatefulWidget {
@@ -13,8 +14,6 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  final _biggerFont = TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold);
-
   // Future to fetch
   Future<PokemonType> futurePokemonType;
 
@@ -38,7 +37,13 @@ class _HomePageState extends State<HomePage> {
         actions: [
           IconButton(
             icon: Icon(Icons.list),
-            onPressed: _showFavorites,
+            onPressed: () {
+              Navigator.pushNamed(
+                context,
+                favoritePageRoute,
+                arguments: _favoritePokemons,
+              );
+            },
           ),
         ],
       ),
@@ -87,7 +92,6 @@ class _HomePageState extends State<HomePage> {
       title: Text(
         // Capitalize pokemon name
         pokemon.name[0].toUpperCase() + pokemon.name.substring(1),
-        style: _biggerFont,
       ),
       trailing: Icon(
         alreadySaved ? Icons.favorite : Icons.favorite_border,
@@ -102,37 +106,6 @@ class _HomePageState extends State<HomePage> {
           }
         });
       },
-    );
-  }
-
-  // TODO: Separate this to a new Widget
-  void _showFavorites() {
-    Navigator.of(context).push(
-      MaterialPageRoute<void>(
-        builder: (BuildContext context) {
-          final tiles = _favoritePokemons.map(
-            (Pokemon pokemon) {
-              return ListTile(
-                title: Text(
-                  pokemon.name,
-                  style: _biggerFont,
-                ),
-              );
-            },
-          );
-          final divided = ListTile.divideTiles(
-            context: context,
-            tiles: tiles,
-          ).toList();
-
-          return Scaffold(
-            appBar: AppBar(
-              title: Text('Favorite Pokemons'),
-            ),
-            body: ListView(children: divided),
-          );
-        },
-      ),
     );
   }
 
