@@ -4,7 +4,14 @@ Freska's 4h interview project, using Flutter. An app that displays a list of all
 
 ## Getting Started
 
-This project is a starting point for a Flutter application.
+Open the project on VSCode or the IDE of your choice. Run the project with either Android simulator, iOS simulator or a real physical mobile device.
+
+## Environment
+-  Flutter (Channel beta, 1.20.0-7.3.pre, on Mac OS X 10.15.5 19F101, locale en-US)
+- Flutter version 1.20.0-7.3.pre
+- Dart version 2.9.0 (build 2.9.0-21.10.beta)
+
+## Other Flutter Resouces
 
 A few resources to get you started if this is your first Flutter project:
 
