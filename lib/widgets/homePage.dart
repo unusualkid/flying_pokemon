@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:english_words/english_words.dart';
 import 'package:flying_pokemon/models/pokemon.dart';
 import 'package:flying_pokemon/models/pokemonType.dart';
 import 'package:http/http.dart' as http;
@@ -15,7 +14,6 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final _biggerFont = TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold);
-  final _saved = Set<WordPair>();
 
   // Future to fetch
   Future<PokemonType> futurePokemonType;
@@ -111,11 +109,11 @@ class _HomePageState extends State<HomePage> {
     Navigator.of(context).push(
       MaterialPageRoute<void>(
         builder: (BuildContext context) {
-          final tiles = _saved.map(
-            (WordPair pair) {
+          final tiles = _favoritePokemons.map(
+            (Pokemon pokemon) {
               return ListTile(
                 title: Text(
-                  pair.asPascalCase,
+                  pokemon.name,
                   style: _biggerFont,
                 ),
               );
